@@ -7,7 +7,7 @@ body {
   color: #1e293b;
 }
 
-/* Conteneur principal */
+/* Conteneur principal plein écran */
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -16,7 +16,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Sidebar par défaut (Bureau) */
+/* Sidebar fixe (Bureau) */
 .sidebar {
   width: 260px;
   background: #1e3a8a;
@@ -31,17 +31,17 @@ body {
   z-index: 100;
 }
 
-/* Contenu principal (occupe tout l'espace restant) */
+/* Zone de contenu principal */
 .main-content {
   flex: 1;
   padding: 30px;
   overflow-y: auto;
   box-sizing: border-box;
   width: 100%;
-  max-width: 100%;
+  max-width: 100% !important;
 }
 
-/* Bouton Menu Burger (caché sur PC) */
+/* En-tête mobile */
 .mobile-header {
   display: none;
   align-items: center;
@@ -62,24 +62,21 @@ body {
   cursor: pointer;
 }
 
-/* Overlay sombre quand le menu mobile est ouvert */
 .sidebar-overlay {
   display: none;
 }
 
-/* --- RÈGLES GLOBALES POUR LE PLEIN ÉCRAN FLUIDE --- */
-.main-content > div {
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.main-content form, 
-.main-content table,
+/* --- SUPPRESSION DE TOUTES LES LIMITES DE LARGEUR --- */
+.main-content > div,
 .main-content div[style*="max-width"],
 .main-content div[style*="width: 600px"],
-.main-content div[style*="width: '600px'"] {
+.main-content div[style*="width: '600px'"],
+.main-content div[style*="margin: 0 auto"],
+.main-content div[style*="margin: '0 auto'"] {
   max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   box-sizing: border-box !important;
 }
 
