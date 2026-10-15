@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url  # <--- Indispensable pour PostgreSQL / Neon
 
 # --- BASE DIRECTORY ---
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -7,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- SECURITY WARNING ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-cle-de-test-pour-developpement-local')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'False'
 
 # Important : Autorise Render et tous les hôtes en production
 ALLOWED_HOSTS = ['*']
@@ -26,15 +27,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     
-    # Tes applications Django (ex: library)
+    # Tes applications Django
     'library',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',            # <--- 1. MIS TOUT EN HAUT (Corrigé)
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise pour gérer les fichiers statiques sur Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',       # WhiteNoise pour les fichiers statiques
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',        # Middleware CORS pour le frontend React
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,12 +64,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'library_project.wsgi.application'
 
 
-# --- DATABASE ---
+# --- DATABASE (Corrigé pour utiliser Neon / PostgreSQL via DATABASE_URL) ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 
@@ -103,13 +105,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Inclus les fichiers statiques générés par la compilation React s'ils existent
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'frontend/dist'),
     os.path.join(BASE_DIR, 'frontend/build'),
 ] if os.path.exists(os.path.join(BASE_DIR, 'frontend/dist')) or os.path.exists(os.path.join(BASE_DIR, 'frontend/build')) else []
 
-# Configuration WhiteNoise pour la compression des statiques en production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
