@@ -1,22 +1,19 @@
-"""
-Django settings for library_project project.
-"""
-
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# --- BASE DIRECTORY ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-remplacez-cette-cle-par-la-votre'
+# --- SECURITY WARNING ---
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-cle-de-test-pour-developpement-local')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+# Important : Autorise Render et tous les hôtes en production
+ALLOWED_HOSTS = ['*']
 
-# Application definition
 
+# --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,17 +21,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Tiers
+    
+    # Bibliothèques tierces
     'rest_framework',
     'corsheaders',
-    # Ton application
+    
+    # Tes applications Django (ex: library)
     'library',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Doit être placé tout en haut
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise pour gérer les fichiers statiques sur Render
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',        # Middleware CORS pour le frontend React
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -47,7 +47,7 @@ ROOT_URLCONF = 'library_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend/dist'), os.path.join(BASE_DIR, 'frontend/build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -62,6 +62,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'library_project.wsgi.application'
 
+
+# --- DATABASE ---
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -69,6 +71,8 @@ DATABASES = {
     }
 }
 
+
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -84,6 +88,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'fr-fr'
 
 TIME_ZONE = 'Indian/Antananarivo'
@@ -92,8 +98,24 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
 
+# --- STATIC FILES (CSS, JavaScript, Images) ---
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Inclus les fichiers statiques générés par la compilation React s'ils existent
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend/dist'),
+    os.path.join(BASE_DIR, 'frontend/build'),
+] if os.path.exists(os.path.join(BASE_DIR, 'frontend/dist')) or os.path.exists(os.path.join(BASE_DIR, 'frontend/build')) else []
+
+# Configuration WhiteNoise pour la compression des statiques en production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# --- DEFAULT PRIMARY KEY FIELD ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# --- CORS CONFIGURATION (REACT FRONTEND) ---
 CORS_ALLOW_ALL_ORIGINS = True
