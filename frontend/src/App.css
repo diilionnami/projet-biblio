@@ -1,11 +1,79 @@
-/* Force toutes les pages et conteneurs principaux à occuper toute la largeur disponible */
+/* Styles généraux et reset */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Conteneur principal */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Sidebar par défaut (Bureau) */
+.sidebar {
+  width: 260px;
+  background: #1e3a8a;
+  color: white;
+  min-height: 100vh;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+/* Contenu principal (occupe tout l'espace restant) */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Bouton Menu Burger (caché sur PC) */
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e3a8a;
+  color: white;
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.menu-toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Overlay sombre quand le menu mobile est ouvert */
+.sidebar-overlay {
+  display: none;
+}
+
+/* --- RÈGLES GLOBALES POUR LE PLEIN ÉCRAN FLUIDE --- */
 .main-content > div {
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
-/* Force les formulaires et tableaux intérieurs à s'adapter fluidement */
 .main-content form, 
 .main-content table,
 .main-content div[style*="max-width"],
@@ -13,4 +81,44 @@
 .main-content div[style*="width: '600px'"] {
   max-width: 100% !important;
   box-sizing: border-box !important;
+}
+
+/* --- MEDIA QUERIES POUR LE RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+  }
+
+  .main-content {
+    padding: 15px;
+  }
 }
