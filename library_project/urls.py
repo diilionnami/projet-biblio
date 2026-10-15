@@ -1,11 +1,17 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('library.urls')), # Adapte selon le nom de ton app d'API
+    path('api/', include('library.urls')), # Tes routes API Django
     
-    # Redirige toutes les autres routes vers l'index.html de React
+    # Route universelle pour laisser React gérer le routage frontend
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]
+
+# Permet de s'assurer que les fichiers statiques sont bien servis
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
